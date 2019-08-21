@@ -1,38 +1,41 @@
 const path = require('path');
 
 module.exports = {
-  mode:process.env.NODE_ENV , // "production" | "development" | "none"
+  mode: process.env.NODE_ENV, // "production" | "development" | "none"
   entry: path.join(__dirname, 'src', 'index'),
   watch: true,
   output: {
     path: __dirname + '/dist',
-    publicPath:path.resolve(__dirname,  '/dist/'),
-    filename: "bundle.js",
-    chunkFilename: '[name].js'
+    publicPath: '/dist/',
+    filename: 'bundle.js',
+    chunkFilename: '[name].js',
   },
   module: {
-    rules: [{
-      test: /.jsx?$/,
-      include: [
-        path.resolve(__dirname, 'src')
-      ],
-      exclude: [
-        path.resolve(__dirname, 'node_modules')
-      ],
-      loader: 'babel-loader',
-      query: {
-        presets: [
-          ["@babel/env", {
-            // "targets": {
-            //   "browsers": "last 2 chrome versions"
-            // }
-          }]
-        ]
-      }
-    }]
+    rules: [
+      {
+        test: /.jsx?$/,
+        include: [path.resolve(__dirname, 'src')],
+        exclude: [path.resolve(__dirname, 'node_modules')],
+        loader: 'babel-loader',
+        query: {
+          presets: [
+            [
+              '@babel/env',
+              {
+                targets: {
+                  chrome: '58',
+                  ie: '10',
+                  safari:'9'
+                },
+              },
+            ],
+          ],
+        },
+      },
+    ],
   },
   resolve: {
-    extensions: ['.json', '.js', '.jsx']
+    extensions: ['.json', '.js', '.jsx'],
   },
   devtool: 'source-map',
   devServer: {
@@ -40,5 +43,5 @@ module.exports = {
     inline: true,
     host: '0.0.0.0',
     port: 8080,
-  }
+  },
 };
