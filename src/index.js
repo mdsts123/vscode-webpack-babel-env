@@ -1,4 +1,4 @@
-class Mcalendar {
+export class Mcalendar {
   FullYear=0;
   month;
   day = -1;

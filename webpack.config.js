@@ -1,13 +1,17 @@
-const path = require('path');
+const path = require('path'),
+  glob = require('glob'),
+  entries = getEntry('src/**/*.js', 'src/'),
+  isDev = process.env.NODE_ENV === 'development';
+console.log(entries,isDev);
 
 module.exports = {
   mode: process.env.NODE_ENV, // "production" | "development" | "none"
-  entry: path.join(__dirname, 'src', 'index'),
+  entry: entries,
   watch: true,
   output: {
     path: __dirname + '/dist',
     publicPath: '/dist/',
-    filename: 'bundle.js',
+    filename:`[name].${isDev?'bundle':'min'}.js`,
     chunkFilename: '[name].js',
   },
   module: {
@@ -25,14 +29,12 @@ module.exports = {
                 targets: {
                   chrome: '58',
                   ie: '10',
-                  safari:'9'
+                  safari: '9',
                 },
               },
             ],
           ],
-          plugins:[
-            '@babel/plugin-proposal-class-properties',
-          ]
+          plugins: ['@babel/plugin-proposal-class-properties'],
         },
       },
     ],
@@ -40,7 +42,7 @@ module.exports = {
   resolve: {
     extensions: ['.json', '.js', '.jsx'],
   },
-  devtool: 'source-map',
+  devtool:isDev?'source-map':'none',
   devServer: {
     contentBase: path.join('/dist/'),
     inline: true,
@@ -48,3 +50,27 @@ module.exports = {
     port: 8080,
   },
 };
+
+function getEntry(globPath, pathDir) {
+  var files = glob.sync(globPath);
+  var entries = {},
+    entry,
+    dirname,
+    basename,
+    pathname,
+    extname;
+
+  for (var i = 0; i < files.length; i++) {
+    entry = files[i];
+    dirname = path.dirname(entry);
+    extname = path.extname(entry);
+    basename = path.basename(entry, extname);
+    pathname = path.normalize(path.join(dirname, basename));
+    pathDir = path.normalize(pathDir);
+    if (pathname.startsWith(pathDir)) {
+      pathname = pathname.substring(pathDir.length);
+    }
+    entries[pathname] = './' + entry;
+  }
+  return entries;
+}
